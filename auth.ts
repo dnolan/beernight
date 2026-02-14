@@ -20,8 +20,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: profile.email.toLowerCase(),
         });
         return !!whitelisted;
-      } catch {
-        console.error("Error checking whitelist");
+      } catch (error) {
+        console.error("Error checking whitelist:", error);
         return false;
       }
     },
