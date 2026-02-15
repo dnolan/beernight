@@ -1,6 +1,6 @@
 {
   "name": "beernight",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,6 +15,7 @@
     "mongoose": "^9.2.1",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.30",
+    "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",

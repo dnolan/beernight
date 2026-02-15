@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
-import { Beer, LogOut, Users } from "lucide-react";
+import { Beer, LogOut, Users, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,6 +16,7 @@ import {
 
 export default function Navbar() {
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
 
   if (!session) return null;
 
@@ -33,6 +35,16 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
+
           <Link href="/whitelist">
             <Button variant="ghost" size="sm">
               <Users className="mr-1.5 h-4 w-4" />
