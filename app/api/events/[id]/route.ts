@@ -38,13 +38,15 @@ export async function PUT(
   await dbConnect();
 
   const body = await request.json();
-  const { title, date } = body;
+  const { title, date, chooser, notes } = body;
 
   const event = await Event.findByIdAndUpdate(
     id,
     {
       ...(title !== undefined && { title }),
       ...(date && { date: new Date(date) }),
+      ...(chooser !== undefined && { chooser }),
+      ...(notes !== undefined && { notes }),
     },
     { returnDocument: "after" }
   ).lean();

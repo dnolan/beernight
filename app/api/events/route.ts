@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   await dbConnect();
 
   const body = await request.json();
-  const { title, date } = body;
+  const { title, date, chooser, notes } = body;
 
   if (!date) {
     return NextResponse.json({ error: "Date is required" }, { status: 400 });
@@ -66,6 +66,8 @@ export async function POST(request: NextRequest) {
   const event = await Event.create({
     title: title || undefined,
     date: new Date(date),
+    chooser: chooser || undefined,
+    notes: notes || undefined,
     createdBy: session.user.email,
   });
 

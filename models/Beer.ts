@@ -51,6 +51,11 @@ const BeerSchema = new Schema<IBeer>(
   }
 );
 
+// Delete cached model in dev so schema changes apply on HMR
+if (process.env.NODE_ENV !== "production" && mongoose.models.Beer) {
+  mongoose.deleteModel("Beer");
+}
+
 const Beer: Model<IBeer> =
   mongoose.models.Beer || mongoose.model<IBeer>("Beer", BeerSchema);
 

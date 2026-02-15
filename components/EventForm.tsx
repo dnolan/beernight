@@ -15,6 +15,8 @@ interface EventFormProps {
     _id: string;
     title?: string;
     date: string;
+    chooser?: string;
+    notes?: string;
   };
 }
 
@@ -28,6 +30,8 @@ export default function EventForm({ initialData }: EventFormProps) {
       ? new Date(initialData.date).toISOString().split("T")[0]
       : ""
   );
+  const [chooser, setChooser] = useState(initialData?.chooser || "");
+  const [notes, setNotes] = useState(initialData?.notes || "");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,7 +47,12 @@ export default function EventForm({ initialData }: EventFormProps) {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title || undefined, date }),
+        body: JSON.stringify({
+          title: title || undefined,
+          date,
+          chooser: chooser || undefined,
+          notes: notes || undefined,
+        }),
       });
 
       if (res.ok) {
@@ -80,6 +89,23 @@ export default function EventForm({ initialData }: EventFormProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               fullWidth
+            />
+            <TextField
+              label="Beer Chooser"
+              placeholder="e.g. John"
+              helperText="Who chose the beers for this event?"
+              value={chooser}
+              onChange={(e) => setChooser(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Notes"
+              placeholder="e.g. Theme was Belgian ales"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              fullWidth
+              multiline
+              minRows={2}
             />
           </Stack>
         </CardContent>

@@ -19,6 +19,11 @@ const WhitelistedEmailSchema = new Schema<IWhitelistedEmail>({
   },
 });
 
+// Delete cached model in dev so schema changes apply on HMR
+if (process.env.NODE_ENV !== "production" && mongoose.models.WhitelistedEmail) {
+  mongoose.deleteModel("WhitelistedEmail");
+}
+
 const WhitelistedEmail: Model<IWhitelistedEmail> =
   mongoose.models.WhitelistedEmail ||
   mongoose.model<IWhitelistedEmail>("WhitelistedEmail", WhitelistedEmailSchema);

@@ -23,6 +23,11 @@ const BrewerySchema = new Schema<IBrewery>(
 // Case-insensitive index for searching
 BrewerySchema.index({ name: "text" });
 
+// Delete cached model in dev so schema changes apply on HMR
+if (process.env.NODE_ENV !== "production" && mongoose.models.Brewery) {
+  mongoose.deleteModel("Brewery");
+}
+
 const Brewery: Model<IBrewery> =
   mongoose.models.Brewery || mongoose.model<IBrewery>("Brewery", BrewerySchema);
 

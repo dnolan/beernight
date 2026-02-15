@@ -28,6 +28,8 @@ export default async function EditEventPage({
           _id: event._id.toString(),
           title: event.title,
           date: event.date.toISOString(),
+          chooser: event.chooser,
+          notes: event.notes,
         }}
       />
     </Box>

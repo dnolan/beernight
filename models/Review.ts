@@ -54,6 +54,11 @@ const ReviewSchema = new Schema<IReview>(
 // One review per user per beer
 ReviewSchema.index({ beerId: 1, userEmail: 1 }, { unique: true });
 
+// Delete cached model in dev so schema changes apply on HMR
+if (process.env.NODE_ENV !== "production" && mongoose.models.Review) {
+  mongoose.deleteModel("Review");
+}
+
 const Review: Model<IReview> =
   mongoose.models.Review || mongoose.model<IReview>("Review", ReviewSchema);
 

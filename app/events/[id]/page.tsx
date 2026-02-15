@@ -103,6 +103,11 @@ export default async function EventDetailPage({
               <CalendarMonth sx={{ fontSize: 18 }} />
               <Typography variant="body2">{dateFormatted}</Typography>
             </Box>
+            {event.chooser && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Chosen by <strong>{event.chooser}</strong>
+              </Typography>
+            )}
           </Box>
           <Stack direction="row" spacing={1}>
             <Link href={`/events/${event._id}/edit`}>
@@ -113,6 +118,12 @@ export default async function EventDetailPage({
             <DeleteEventButton eventId={event._id.toString()} eventName={title} />
           </Stack>
         </Box>
+
+        {event.notes && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, whiteSpace: "pre-line" }}>
+            {event.notes}
+          </Typography>
+        )}
 
         <Box sx={{ mt: 2 }}>
           <EventStats
