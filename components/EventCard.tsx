@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { SportsBar, CalendarMonth, Star } from "@mui/icons-material";
+import { SportsBar, CalendarMonth, Star, Upcoming } from "@mui/icons-material";
 
 interface EventCardProps {
   event: {
@@ -28,7 +28,9 @@ function getEventDisplayTitle(event: { title?: string; date: string }) {
 
 export default function EventCard({ event }: EventCardProps) {
   const title = getEventDisplayTitle(event);
-  const dateFormatted = new Date(event.date).toLocaleDateString("en-US", {
+  const eventDate = new Date(event.date);
+  const isFuture = eventDate.setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0);
+  const dateFormatted = eventDate.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -40,9 +42,14 @@ export default function EventCard({ event }: EventCardProps) {
       <Card sx={{ transition: "box-shadow 0.2s", "&:hover": { boxShadow: 4 } }}>
         <CardActionArea>
           <CardContent>
-            <Typography variant="subtitle1" fontWeight={600}>
-              {title}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {title}
+              </Typography>
+              {isFuture && (
+                <Upcoming sx={{ fontSize: 18, color: "warning.main" }} />
+              )}
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5, color: "text.secondary" }}>
               <CalendarMonth sx={{ fontSize: 16 }} />
               <Typography variant="body2">{dateFormatted}</Typography>
