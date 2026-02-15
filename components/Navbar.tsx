@@ -15,7 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import { SportsBar, LightMode, DarkMode, Logout, People, Person } from "@mui/icons-material";
+import { SportsBar, LightMode, DarkMode, Logout, People, Person, LocalDrink } from "@mui/icons-material";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -56,6 +56,12 @@ export default function Navbar() {
           <Link href="/whitelist">
             <Button size="small" startIcon={<People fontSize="small" />}>
               Whitelist
+            </Button>
+          </Link>
+
+          <Link href="/breweries">
+            <Button size="small" startIcon={<LocalDrink fontSize="small" />}>
+              Breweries
             </Button>
           </Link>
 
