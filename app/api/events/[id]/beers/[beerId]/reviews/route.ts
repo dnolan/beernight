@@ -55,7 +55,7 @@ export async function POST(
       rating,
       description: description || "",
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
+    { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
   ).lean();
 
   return NextResponse.json(review, { status: 201 });

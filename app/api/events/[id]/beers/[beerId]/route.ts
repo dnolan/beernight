@@ -57,7 +57,7 @@ export async function PUT(
   }
 
   const beer = await Beer.findByIdAndUpdate(beerId, update, {
-    new: true,
+    returnDocument: "after",
   }).lean();
 
   if (!beer) {

@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import { Delete } from "@mui/icons-material";
 import StarRating from "@/components/StarRating";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Review {
   _id: string;
@@ -33,6 +34,8 @@ export default function ReviewList({
   const router = useRouter();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<Review | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch(`/api/events/${eventId}/beers/${beerId}/reviews`)
@@ -44,12 +47,16 @@ export default function ReviewList({
       .catch(() => setLoading(false));
   }, [eventId, beerId]);
 
-  const handleDelete = async (reviewId: string) => {
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     await fetch(
-      `/api/events/${eventId}/beers/${beerId}/reviews/${reviewId}`,
+      `/api/events/${eventId}/beers/${beerId}/reviews/${deleteTarget._id}`,
       { method: "DELETE" }
     );
-    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+    setReviews((prev) => prev.filter((r) => r._id !== deleteTarget._id));
+    setDeleteTarget(null);
+    setDeleting(false);
     router.refresh();
   };
 
@@ -95,7 +102,7 @@ export default function ReviewList({
                 <IconButton
                   size="small"
                   color="error"
-                  onClick={() => handleDelete(review._id)}
+                  onClick={() => setDeleteTarget(review)}
                   sx={{ width: 24, height: 24 }}
                 >
                   <Delete sx={{ fontSize: 16 }} />
@@ -110,6 +117,15 @@ export default function ReviewList({
           )}
         </Paper>
       ))}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Review"
+        message={`Delete the review by ${deleteTarget?.userName || deleteTarget?.userEmail || "this user"}?`}
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </Stack>
   );
 }

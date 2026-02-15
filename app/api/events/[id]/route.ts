@@ -46,7 +46,7 @@ export async function PUT(
       ...(title !== undefined && { title }),
       ...(date && { date: new Date(date) }),
     },
-    { new: true }
+    { returnDocument: "after" }
   ).lean();
 
   if (!event) {

@@ -109,7 +109,7 @@ export default async function EventDetailPage({
                 Edit
               </Button>
             </Link>
-            <DeleteEventButton eventId={event._id.toString()} />
+            <DeleteEventButton eventId={event._id.toString()} eventName={title} />
           </Stack>
         </Box>
 

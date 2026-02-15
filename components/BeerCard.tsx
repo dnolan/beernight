@@ -16,6 +16,7 @@ import StarRating from "@/components/StarRating";
 import ReviewForm from "@/components/ReviewForm";
 import ReviewList from "@/components/ReviewList";
 import BeerEditForm from "@/components/BeerEditForm";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface BeerCardProps {
   beer: {
@@ -37,15 +38,14 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm(`Delete "${beer.name}"? This will also remove all reviews.`)) {
-      return;
-    }
     setDeleting(true);
     await fetch(`/api/events/${beer.eventId}/beers/${beer._id}`, {
       method: "DELETE",
     });
+    setConfirmOpen(false);
     router.refresh();
   };
 
@@ -112,7 +112,7 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
             <IconButton
               size="small"
               color="error"
-              onClick={handleDelete}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
             >
               <Delete fontSize="small" />
@@ -132,6 +132,15 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
           </Box>
         </Collapse>
       </CardContent>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete Beer"
+        message={`Delete "${beer.name}"? This will also remove all its reviews.`}
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </Card>
   );
 }

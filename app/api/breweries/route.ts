@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
   const brewery = await Brewery.findOneAndUpdate(
     { name: { $regex: `^${name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
     { $setOnInsert: { name: name.trim() } },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: "after" }
   );
 
   return NextResponse.json(brewery, { status: 201 });

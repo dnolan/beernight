@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import { Add, Delete, Email } from "@mui/icons-material";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface WhitelistedEmail {
   _id: string;
@@ -24,6 +25,8 @@ export default function WhitelistPage() {
   const [newEmail, setNewEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [deleteEmail, setDeleteEmail] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch("/api/whitelist")
@@ -57,13 +60,15 @@ export default function WhitelistPage() {
     }
   };
 
-  const handleDelete = async (email: string) => {
-    if (!confirm(`Remove ${email} from the whitelist?`)) return;
-
-    await fetch(`/api/whitelist?email=${encodeURIComponent(email)}`, {
+  const handleDelete = async () => {
+    if (!deleteEmail) return;
+    setDeleting(true);
+    await fetch(`/api/whitelist?email=${encodeURIComponent(deleteEmail)}`, {
       method: "DELETE",
     });
-    setEmails((prev) => prev.filter((e) => e.email !== email));
+    setEmails((prev) => prev.filter((e) => e.email !== deleteEmail));
+    setDeleteEmail(null);
+    setDeleting(false);
   };
 
   if (!session) return null;
@@ -140,7 +145,7 @@ export default function WhitelistPage() {
                   <IconButton
                     size="small"
                     color="error"
-                    onClick={() => handleDelete(entry.email)}
+                    onClick={() => setDeleteEmail(entry.email)}
                   >
                     <Delete fontSize="small" />
                   </IconButton>
@@ -150,6 +155,16 @@ export default function WhitelistPage() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteEmail}
+        title="Remove Email"
+        message={`Remove "${deleteEmail}" from the whitelist? They will no longer be able to sign in.`}
+        confirmLabel="Remove"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteEmail(null)}
+      />
     </Box>
   );
 }
