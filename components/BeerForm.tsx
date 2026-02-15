@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import { Add } from "@mui/icons-material";
 import BreweryChipInput from "@/components/BreweryChipInput";
 
 interface BeerFormProps {
@@ -47,68 +49,68 @@ export default function BeerForm({ eventId }: BeerFormProps) {
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)} variant="outline" className="w-full">
-        <Plus className="mr-2 h-4 w-4" />
+      <Button
+        onClick={() => setOpen(true)}
+        variant="outlined"
+        fullWidth
+        startIcon={<Add />}
+      >
         Add Beer
       </Button>
     );
   }
 
   return (
-    <form
+    <Box
+      component="form"
       onSubmit={handleSubmit}
-      className="rounded-lg border bg-card p-4 space-y-3"
+      sx={{ border: 1, borderColor: "divider", borderRadius: 2, p: 2 }}
     >
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="beer-name">Name *</Label>
-          <Input
-            id="beer-name"
+      <Stack spacing={2}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+          <TextField
+            label="Name"
             placeholder="e.g. Punk IPA"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            size="small"
+            fullWidth
           />
-        </div>
-        <div className="space-y-1.5 sm:col-span-2">
-          <Label>Breweries</Label>
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            Breweries
+          </Typography>
           <BreweryChipInput value={breweries} onChange={setBreweries} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="beer-style">Style</Label>
-          <Input
-            id="beer-style"
+        </Box>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+          <TextField
+            label="Style"
             placeholder="e.g. IPA"
             value={style}
             onChange={(e) => setStyle(e.target.value)}
+            size="small"
+            fullWidth
           />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="beer-abv">ABV %</Label>
-          <Input
-            id="beer-abv"
+          <TextField
+            label="ABV %"
             type="number"
-            step="0.1"
-            min="0"
-            max="100"
+            slotProps={{ htmlInput: { step: 0.1, min: 0, max: 100 } }}
             placeholder="e.g. 5.6"
             value={abv}
             onChange={(e) => setAbv(e.target.value)}
+            size="small"
+            fullWidth
           />
-        </div>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setOpen(false)}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading || !name}>
-          {loading ? "Adding..." : "Add Beer"}
-        </Button>
-      </div>
-    </form>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button type="submit" variant="contained" disabled={loading || !name}>
+            {loading ? "Adding..." : "Add Beer"}
+          </Button>
+        </Box>
+      </Stack>
+    </Box>
   );
 }

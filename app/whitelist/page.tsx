@@ -2,10 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Plus, Trash2, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import { Add, Delete, Email } from "@mui/icons-material";
 
 interface WhitelistedEmail {
   _id: string;
@@ -64,71 +69,87 @@ export default function WhitelistPage() {
   if (!session) return null;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Manage Whitelist</h1>
-      <p className="text-muted-foreground">
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <Typography variant="h5" fontWeight={700}>
+        Manage Whitelist
+      </Typography>
+      <Typography color="text.secondary">
         Only whitelisted email addresses can sign in to Beer Night.
-      </p>
+      </Typography>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Add Email</CardTitle>
-        </CardHeader>
         <CardContent>
-          <form onSubmit={handleAdd} className="flex gap-2">
-            <Input
+          <Typography variant="subtitle2" gutterBottom>
+            Add Email
+          </Typography>
+          <Box component="form" onSubmit={handleAdd} sx={{ display: "flex", gap: 1 }}>
+            <TextField
               type="email"
               placeholder="user@example.com"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               required
+              size="small"
+              fullWidth
             />
-            <Button type="submit" disabled={adding || !newEmail}>
-              <Plus className="mr-1.5 h-4 w-4" />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={adding || !newEmail}
+              startIcon={<Add />}
+            >
               {adding ? "Adding..." : "Add"}
             </Button>
-          </form>
+          </Box>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            Whitelisted Emails ({emails.length})
-          </CardTitle>
-        </CardHeader>
         <CardContent>
+          <Typography variant="subtitle2" gutterBottom>
+            Whitelisted Emails ({emails.length})
+          </Typography>
           {loading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <Typography variant="body2" color="text.secondary">
+              Loading...
+            </Typography>
           ) : emails.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <Typography variant="body2" color="text.secondary">
               No emails whitelisted yet.
-            </p>
+            </Typography>
           ) : (
-            <div className="space-y-2">
+            <Stack spacing={1}>
               {emails.map((entry) => (
-                <div
+                <Box
                   key={entry._id}
-                  className="flex items-center justify-between rounded-md border p-3"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    border: 1,
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    px: 2,
+                    py: 1,
+                  }}
                 >
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{entry.email}</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Email sx={{ fontSize: 18, color: "text.secondary" }} />
+                    <Typography variant="body2">{entry.email}</Typography>
+                  </Box>
+                  <IconButton
+                    size="small"
+                    color="error"
                     onClick={() => handleDelete(entry.email)}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </Box>
               ))}
-            </div>
+            </Stack>
           )}
         </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 }

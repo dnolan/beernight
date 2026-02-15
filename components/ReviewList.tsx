@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import { Delete } from "@mui/icons-material";
 import StarRating from "@/components/StarRating";
 
 interface Review {
@@ -50,57 +54,62 @@ export default function ReviewList({
   };
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading reviews...</p>;
+    return (
+      <Typography variant="body2" color="text.secondary">
+        Loading reviews...
+      </Typography>
+    );
   }
 
   if (reviews.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <Typography variant="body2" color="text.secondary">
         No reviews yet. Be the first!
-      </p>
+      </Typography>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-medium">
+    <Stack spacing={1.5}>
+      <Typography variant="body2" fontWeight={500}>
         Reviews ({reviews.length})
-      </p>
+      </Typography>
       {reviews.map((review) => (
-        <div
+        <Paper
           key={review._id}
-          className="rounded-md border bg-muted/50 p-3 space-y-1"
+          variant="outlined"
+          sx={{ p: 1.5 }}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <StarRating rating={review.rating} size="sm" />
-              <span className="text-sm font-medium">
+              <Typography variant="body2" fontWeight={500}>
                 {review.userName || review.userEmail}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="caption" color="text.secondary">
                 {new Date(review.createdAt).toLocaleDateString()}
-              </span>
+              </Typography>
               {review.userEmail === currentUserEmail && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-destructive hover:text-destructive"
+                <IconButton
+                  size="small"
+                  color="error"
                   onClick={() => handleDelete(review._id)}
+                  sx={{ width: 24, height: 24 }}
                 >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+                  <Delete sx={{ fontSize: 16 }} />
+                </IconButton>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
           {review.description && (
-            <p className="text-sm text-muted-foreground">
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {review.description}
-            </p>
+            </Typography>
           )}
-        </div>
+        </Paper>
       ))}
-    </div>
+    </Stack>
   );
 }

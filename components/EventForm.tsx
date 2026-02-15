@@ -2,16 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
 
 interface EventFormProps {
   initialData?: {
@@ -60,53 +57,46 @@ export default function EventForm({ initialData }: EventFormProps) {
   };
 
   return (
-    <Card className="max-w-lg mx-auto">
+    <Card sx={{ maxWidth: 512, mx: "auto" }}>
       <form onSubmit={handleSubmit}>
-        <CardHeader>
-          <CardTitle>{isEditing ? "Edit Event" : "New Event"}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="date">Date *</Label>
-            <Input
-              id="date"
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            {isEditing ? "Edit Event" : "New Event"}
+          </Typography>
+          <Stack spacing={2.5}>
+            <TextField
+              label="Date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
+              fullWidth
+              slotProps={{ inputLabel: { shrink: true } }}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Title{" "}
-              <span className="text-muted-foreground text-xs">
-                (defaults to month name)
-              </span>
-            </Label>
-            <Input
-              id="title"
+            <TextField
+              label="Title"
               placeholder="e.g. February Beer Night"
+              helperText="Defaults to month name if left empty"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              fullWidth
             />
-          </div>
+          </Stack>
         </CardContent>
-        <CardFooter className="flex justify-end gap-2">
+        <CardActions sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}>
+          <Button onClick={() => router.back()}>Cancel</Button>
           <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
+            type="submit"
+            variant="contained"
+            disabled={loading || !date}
           >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading || !date}>
             {loading
               ? "Saving..."
               : isEditing
                 ? "Update Event"
                 : "Create Event"}
           </Button>
-        </CardFooter>
+        </CardActions>
       </form>
     </Card>
   );

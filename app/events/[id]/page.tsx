@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Pencil, Trash2 } from "lucide-react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { CalendarMonth, Edit } from "@mui/icons-material";
 import { requireAuth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Event from "@/models/Event";
 import Beer from "@/models/Beer";
 import Review from "@/models/Review";
-import { Button } from "@/components/ui/button";
 import EventStats from "@/components/EventStats";
 import BeerCard from "@/components/BeerCard";
 import BeerForm from "@/components/BeerForm";
@@ -88,39 +91,42 @@ export default async function EventDetailPage({
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <div className="mt-1 flex items-center gap-1.5 text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              {dateFormatted}
-            </div>
-          </div>
-          <div className="flex gap-2">
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <Box>
+        <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
+          <Box>
+            <Typography variant="h5" fontWeight={700}>
+              {title}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mt: 0.5, color: "text.secondary" }}>
+              <CalendarMonth sx={{ fontSize: 18 }} />
+              <Typography variant="body2">{dateFormatted}</Typography>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
             <Link href={`/events/${event._id}/edit`}>
-              <Button variant="outline" size="sm">
-                <Pencil className="mr-1.5 h-3.5 w-3.5" />
+              <Button variant="outlined" size="small" startIcon={<Edit sx={{ fontSize: 16 }} />}>
                 Edit
               </Button>
             </Link>
             <DeleteEventButton eventId={event._id.toString()} />
-          </div>
-        </div>
+          </Stack>
+        </Box>
 
-        <div className="mt-4">
+        <Box sx={{ mt: 2 }}>
           <EventStats
             beerCount={beers.length}
             avgAbv={avgAbv}
             avgRating={avgRating}
             reviewCount={reviews.length}
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="space-y-3">
-        <h2 className="text-lg font-semibold">Beers</h2>
+      <Stack spacing={1.5}>
+        <Typography variant="h6" fontWeight={600}>
+          Beers
+        </Typography>
         {beersWithStats.map((beer) => (
           <BeerCard
             key={beer._id}
@@ -129,7 +135,7 @@ export default async function EventDetailPage({
           />
         ))}
         <BeerForm eventId={event._id.toString()} />
-      </div>
-    </div>
+      </Stack>
+    </Box>
   );
 }

@@ -1,5 +1,7 @@
-import { Beer as BeerIcon, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
+import { SportsBar, Star } from "@mui/icons-material";
 
 interface EventStatsProps {
   beerCount: number;
@@ -15,34 +17,33 @@ export default function EventStats({
   reviewCount,
 }: EventStatsProps) {
   return (
-    <div className="flex flex-wrap gap-3">
-      <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
-        <BeerIcon className="h-4 w-4 text-muted-foreground" />
-        <div>
-          <p className="text-sm font-medium">
-            {beerCount} beer{beerCount !== 1 ? "s" : ""}
-          </p>
-        </div>
-      </div>
+    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+      <Chip
+        icon={<SportsBar sx={{ fontSize: 18 }} />}
+        label={`${beerCount} beer${beerCount !== 1 ? "s" : ""}`}
+        variant="outlined"
+      />
       {beerCount > 0 && (
-        <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
-          <Badge variant="outline" className="font-mono">
-            {avgAbv}%
-          </Badge>
-          <p className="text-sm text-muted-foreground">Avg ABV</p>
-        </div>
+        <Chip
+          label={`Avg ${avgAbv}% ABV`}
+          variant="outlined"
+          sx={{ fontFamily: "monospace" }}
+        />
       )}
       {reviewCount > 0 && (
-        <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
-          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-          <div>
-            <p className="text-sm font-medium">{avgRating} / 5</p>
-            <p className="text-xs text-muted-foreground">
-              {reviewCount} review{reviewCount !== 1 ? "s" : ""}
-            </p>
-          </div>
-        </div>
+        <Chip
+          icon={<Star sx={{ fontSize: 18, color: "#facc15" }} />}
+          label={
+            <>
+              {avgRating} / 5{" "}
+              <Typography component="span" variant="caption" color="text.secondary">
+                ({reviewCount} review{reviewCount !== 1 ? "s" : ""})
+              </Typography>
+            </>
+          }
+          variant="outlined"
+        />
       )}
-    </div>
+    </Box>
   );
 }

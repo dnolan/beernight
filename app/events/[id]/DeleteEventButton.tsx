@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Button from "@mui/material/Button";
+import { Delete } from "@mui/icons-material";
 
 export default function DeleteEventButton({ eventId }: { eventId: string }) {
   const router = useRouter();
@@ -23,12 +23,12 @@ export default function DeleteEventButton({ eventId }: { eventId: string }) {
 
   return (
     <Button
-      variant="outline"
-      size="sm"
-      className="text-destructive hover:text-destructive"
+      variant="outlined"
+      size="small"
+      color="error"
+      startIcon={<Delete sx={{ fontSize: 16 }} />}
       onClick={handleDelete}
     >
-      <Trash2 className="mr-1.5 h-3.5 w-3.5" />
       Delete
     </Button>
   );

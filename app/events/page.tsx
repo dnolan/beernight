@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import { Add } from "@mui/icons-material";
 import { requireAuth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Event from "@/models/Event";
 import Beer from "@/models/Beer";
 import Review from "@/models/Review";
-import { Button } from "@/components/ui/button";
 import EventCard from "@/components/EventCard";
 
 export default async function EventsPage() {
@@ -46,30 +49,33 @@ export default async function EventsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Events</h1>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Typography variant="h5" fontWeight={700}>
+          Events
+        </Typography>
         <Link href="/events/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button variant="contained" startIcon={<Add />}>
             New Event
           </Button>
         </Link>
-      </div>
+      </Box>
 
       {eventsWithStats.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <Typography color="text.secondary">
             No events yet. Create one to get started!
-          </p>
-        </div>
+          </Typography>
+        </Box>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid container spacing={2}>
           {eventsWithStats.map((event) => (
-            <EventCard key={event._id} event={event} />
+            <Grid key={event._id} size={{ xs: 12, sm: 6 }}>
+              <EventCard event={event} />
+            </Grid>
           ))}
-        </div>
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 }

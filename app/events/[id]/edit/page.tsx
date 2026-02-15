@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { requireAuth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Event from "@/models/Event";
@@ -17,8 +19,10 @@ export default async function EditEventPage({
   if (!event) notFound();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Edit Event</h1>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <Typography variant="h5" fontWeight={700}>
+        Edit Event
+      </Typography>
       <EventForm
         initialData={{
           _id: event._id.toString(),
@@ -26,6 +30,6 @@ export default async function EditEventPage({
           date: event.date.toISOString(),
         }}
       />
-    </div>
+    </Box>
   );
 }

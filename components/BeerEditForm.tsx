@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 import BreweryChipInput from "@/components/BreweryChipInput";
 
 interface BeerEditFormProps {
@@ -58,56 +60,52 @@ export default function BeerEditForm({ beer, onCancel }: BeerEditFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-lg border bg-card p-4 space-y-3"
-    >
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor={`edit-name-${beer._id}`}>Name *</Label>
-          <Input
-            id={`edit-name-${beer._id}`}
+    <form onSubmit={handleSubmit}>
+      <Stack spacing={2}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+          <TextField
+            label="Name"
             placeholder="e.g. Punk IPA"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            size="small"
+            fullWidth
           />
-        </div>
-        <div className="space-y-1.5 sm:col-span-2">
-          <Label>Breweries</Label>
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            Breweries
+          </Typography>
           <BreweryChipInput value={breweries} onChange={setBreweries} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor={`edit-style-${beer._id}`}>Style</Label>
-          <Input
-            id={`edit-style-${beer._id}`}
+        </Box>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+          <TextField
+            label="Style"
             placeholder="e.g. IPA"
             value={style}
             onChange={(e) => setStyle(e.target.value)}
+            size="small"
+            fullWidth
           />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor={`edit-abv-${beer._id}`}>ABV %</Label>
-          <Input
-            id={`edit-abv-${beer._id}`}
+          <TextField
+            label="ABV %"
             type="number"
-            step="0.1"
-            min="0"
-            max="100"
+            slotProps={{ htmlInput: { step: 0.1, min: 0, max: 100 } }}
             placeholder="e.g. 5.6"
             value={abv}
             onChange={(e) => setAbv(e.target.value)}
+            size="small"
+            fullWidth
           />
-        </div>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading || !name}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button type="submit" variant="contained" disabled={loading || !name}>
+            {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </Box>
+      </Stack>
     </form>
   );
 }

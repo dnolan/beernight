@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Calendar, Beer as BeerIcon, Star } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActionArea from "@mui/material/CardActionArea";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { SportsBar, CalendarMonth, Star } from "@mui/icons-material";
 
 interface EventCardProps {
   event: {
@@ -37,33 +37,37 @@ export default function EventCard({ event }: EventCardProps) {
 
   return (
     <Link href={`/events/${event._id}`}>
-      <Card className="transition-all hover:shadow-md hover:border-primary/30 cursor-pointer">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{title}</CardTitle>
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5" />
-            {dateFormatted}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <BeerIcon className="h-3 w-3" />
-              {event.beerCount} beer{event.beerCount !== 1 ? "s" : ""}
-            </Badge>
-            {event.beerCount > 0 && (
-              <Badge variant="secondary">
-                Avg {event.avgAbv}% ABV
-              </Badge>
-            )}
-            {event.reviewCount > 0 && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                {event.avgRating}
-              </Badge>
-            )}
-          </div>
-        </CardContent>
+      <Card sx={{ transition: "box-shadow 0.2s", "&:hover": { boxShadow: 4 } }}>
+        <CardActionArea>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight={600}>
+              {title}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5, color: "text.secondary" }}>
+              <CalendarMonth sx={{ fontSize: 16 }} />
+              <Typography variant="body2">{dateFormatted}</Typography>
+            </Box>
+            <Stack direction="row" spacing={1} sx={{ mt: 1.5, flexWrap: "wrap", gap: 1 }}>
+              <Chip
+                icon={<SportsBar sx={{ fontSize: 16 }} />}
+                label={`${event.beerCount} beer${event.beerCount !== 1 ? "s" : ""}`}
+                size="small"
+                variant="outlined"
+              />
+              {event.beerCount > 0 && (
+                <Chip label={`Avg ${event.avgAbv}% ABV`} size="small" variant="outlined" />
+              )}
+              {event.reviewCount > 0 && (
+                <Chip
+                  icon={<Star sx={{ fontSize: 16, color: "#facc15" }} />}
+                  label={String(event.avgRating)}
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+            </Stack>
+          </CardContent>
+        </CardActionArea>
       </Card>
     </Link>
   );

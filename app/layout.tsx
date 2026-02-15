@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
@@ -27,12 +28,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable}`}
       >
-        <Providers>
-          <Navbar />
-          <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
-        </Providers>
+        <AppRouterCacheProvider>
+          <Providers>
+            <Navbar />
+            <main style={{ maxWidth: 960, margin: "0 auto", padding: "32px 16px" }}>
+              {children}
+            </main>
+          </Providers>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

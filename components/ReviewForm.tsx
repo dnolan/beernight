@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import StarRating from "@/components/StarRating";
 
 interface ReviewFormProps {
@@ -43,25 +45,32 @@ export default function ReviewForm({ eventId, beerId }: ReviewFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div>
-        <p className="text-sm font-medium mb-1.5">Your Review</p>
-        <StarRating
-          rating={rating}
-          interactive
-          size="lg"
-          onChange={setRating}
-        />
-      </div>
-      <Textarea
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+      <Box>
+        <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+          Your Review
+        </Typography>
+        <StarRating rating={rating} interactive size="lg" onChange={setRating} />
+      </Box>
+      <TextField
         placeholder="What did you think? (optional)"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        multiline
         rows={2}
+        size="small"
+        fullWidth
       />
-      <Button type="submit" size="sm" disabled={loading || rating === 0}>
-        {loading ? "Submitting..." : "Submit Review"}
-      </Button>
-    </form>
+      <Box>
+        <Button
+          type="submit"
+          variant="contained"
+          size="small"
+          disabled={loading || rating === 0}
+        >
+          {loading ? "Submitting..." : "Submit Review"}
+        </Button>
+      </Box>
+    </Box>
   );
 }

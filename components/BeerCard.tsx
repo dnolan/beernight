@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Trash2, ChevronDown, ChevronUp, Pencil } from "lucide-react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
+import { Delete, ExpandMore, ExpandLess, Edit } from "@mui/icons-material";
 import StarRating from "@/components/StarRating";
 import ReviewForm from "@/components/ReviewForm";
 import ReviewList from "@/components/ReviewList";
@@ -43,10 +49,17 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
     router.refresh();
   };
 
+  const breweryList =
+    beer.breweries && beer.breweries.length > 0
+      ? beer.breweries
+      : beer.brewery
+        ? [beer.brewery]
+        : [];
+
   if (editing) {
     return (
       <Card>
-        <CardContent className="pt-4">
+        <CardContent>
           <BeerEditForm beer={beer} onCancel={() => setEditing(false)} />
         </CardContent>
       </Card>
@@ -55,88 +68,69 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
 
   return (
     <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-base">{beer.name}</h3>
+      <CardContent>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {beer.name}
+              </Typography>
               {beer.abv > 0 && (
-                <Badge variant="outline" className="font-mono text-xs">
-                  {beer.abv}%
-                </Badge>
+                <Chip
+                  label={`${beer.abv}%`}
+                  size="small"
+                  variant="outlined"
+                  sx={{ fontFamily: "monospace", fontSize: 12 }}
+                />
               )}
-            </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-sm text-muted-foreground">
-              {(beer.breweries && beer.breweries.length > 0
-                ? beer.breweries
-                : beer.brewery
-                  ? [beer.brewery]
-                  : []
-              ).map((b, i) => (
-                <span key={b}>{i > 0 ? "· " : ""}{b}</span>
-              ))}
-              {beer.style && (
-                <span>
-                  ·{" "}{beer.style}
-                </span>
-              )}
-            </div>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {[...breweryList, beer.style].filter(Boolean).join(" · ")}
+            </Typography>
             {beer.reviewCount > 0 && (
-              <div className="flex items-center gap-2 mt-2">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
                 <StarRating rating={Math.round(beer.avgRating)} size="sm" />
-                <span className="text-sm text-muted-foreground">
+                <Typography variant="body2" color="text.secondary">
                   {beer.avgRating} ({beer.reviewCount} review
                   {beer.reviewCount !== 1 ? "s" : ""})
-                </span>
-              </div>
+                </Typography>
+              </Box>
             )}
-          </div>
+          </Box>
 
-          <div className="flex items-center gap-1">
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Button
-              variant="ghost"
-              size="sm"
+              size="small"
               onClick={() => setExpanded(!expanded)}
+              endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
             >
-              {expanded ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
               Reviews
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setEditing(true)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-destructive hover:text-destructive"
+            <IconButton size="small" onClick={() => setEditing(true)}>
+              <Edit fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              color="error"
               onClick={handleDelete}
               disabled={deleting}
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+              <Delete fontSize="small" />
+            </IconButton>
+          </Box>
+        </Box>
 
-        {expanded && (
-          <div className="mt-4 space-y-4 border-t pt-4">
-            <ReviewForm
-              eventId={beer.eventId}
-              beerId={beer._id}
-            />
+        <Collapse in={expanded}>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <ReviewForm eventId={beer.eventId} beerId={beer._id} />
             <ReviewList
               eventId={beer.eventId}
               beerId={beer._id}
               currentUserEmail={currentUserEmail}
             />
-          </div>
-        )}
+          </Box>
+        </Collapse>
       </CardContent>
     </Card>
   );
