@@ -19,6 +19,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const whitelisted = await WhitelistedEmail.findOne({
           email: profile.email.toLowerCase(),
         });
+        
+        console.log("Whitelist check for email:", profile.email, "Result:", !!whitelisted);
+
         return !!whitelisted;
       } catch (error) {
         console.error("Error checking whitelist:", error);
