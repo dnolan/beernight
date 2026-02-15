@@ -16,6 +16,7 @@ interface BeerCardProps {
     eventId: string;
     name: string;
     brewery: string;
+    breweries?: string[];
     style: string;
     abv: number;
     avgRating: number;
@@ -54,8 +55,19 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
               )}
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-sm text-muted-foreground">
-              {beer.brewery && <span>{beer.brewery}</span>}
-              {beer.style && <span>· {beer.style}</span>}
+              {(beer.breweries && beer.breweries.length > 0
+                ? beer.breweries
+                : beer.brewery
+                  ? [beer.brewery]
+                  : []
+              ).map((b, i) => (
+                <span key={b}>{i > 0 ? "· " : ""}{b}</span>
+              ))}
+              {beer.style && (
+                <span>
+                  ·{" "}{beer.style}
+                </span>
+              )}
             </div>
             {beer.reviewCount > 0 && (
               <div className="flex items-center gap-2 mt-2">

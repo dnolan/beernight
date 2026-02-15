@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import BreweryChipInput from "@/components/BreweryChipInput";
 
 interface BeerFormProps {
   eventId: string;
@@ -16,7 +17,7 @@ export default function BeerForm({ eventId }: BeerFormProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
-  const [brewery, setBrewery] = useState("");
+  const [breweries, setBreweries] = useState<string[]>([]);
   const [style, setStyle] = useState("");
   const [abv, setAbv] = useState("");
 
@@ -28,12 +29,12 @@ export default function BeerForm({ eventId }: BeerFormProps) {
       const res = await fetch(`/api/events/${eventId}/beers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, brewery, style, abv }),
+        body: JSON.stringify({ name, breweries, style, abv }),
       });
 
       if (res.ok) {
         setName("");
-        setBrewery("");
+        setBreweries([]);
         setStyle("");
         setAbv("");
         setOpen(false);
@@ -69,14 +70,9 @@ export default function BeerForm({ eventId }: BeerFormProps) {
             required
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="beer-brewery">Brewery</Label>
-          <Input
-            id="beer-brewery"
-            placeholder="e.g. BrewDog"
-            value={brewery}
-            onChange={(e) => setBrewery(e.target.value)}
-          />
+        <div className="space-y-1.5 sm:col-span-2">
+          <Label>Breweries</Label>
+          <BreweryChipInput value={breweries} onChange={setBreweries} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="beer-style">Style</Label>

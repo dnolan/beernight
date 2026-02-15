@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import Beer from "@/models/Beer";
 import Review from "@/models/Review";
+import Brewery from "@/models/Brewery";
 
 export async function GET(
   _request: NextRequest,
@@ -51,7 +52,7 @@ export async function POST(
   await dbConnect();
 
   const body = await request.json();
-  const { name, brewery, style, abv } = body;
+  const { name, brewery, breweries, style, abv } = body;
 
   if (!name) {
     return NextResponse.json(
@@ -60,10 +61,36 @@ export async function POST(
     );
   }
 
+  // Resolve breweries: prefer new `breweries` array, fall back to legacy `brewery` string
+  const breweryList: string[] = Array.isArray(breweries)
+    ? breweries.map((b: string) => b.trim()).filter(Boolean)
+    : brewery
+      ? [brewery.trim()]
+      : [];
+
+  // Upsert each brewery into the lookup collection
+  if (breweryList.length > 0) {
+    await Promise.all(
+      breweryList.map((bName) =>
+        Brewery.findOneAndUpdate(
+          {
+            name: {
+              $regex: `^${bName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              $options: "i",
+            },
+          },
+          { $setOnInsert: { name: bName } },
+          { upsert: true }
+        )
+      )
+    );
+  }
+
   const beer = await Beer.create({
     eventId,
     name,
-    brewery: brewery || "",
+    brewery: breweryList.join(" / "),
+    breweries: breweryList,
     style: style || "",
     abv: abv ? parseFloat(abv) : 0,
   });

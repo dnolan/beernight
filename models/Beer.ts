@@ -4,7 +4,8 @@ export interface IBeer extends Document {
   _id: Types.ObjectId;
   eventId: Types.ObjectId;
   name: string;
-  brewery: string;
+  brewery: string; // kept for backward compat – derived from breweries
+  breweries: string[];
   style: string;
   abv: number;
   createdAt: Date;
@@ -28,6 +29,10 @@ const BeerSchema = new Schema<IBeer>(
       type: String,
       trim: true,
       default: "",
+    },
+    breweries: {
+      type: [String],
+      default: [],
     },
     style: {
       type: String,
