@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil } from "lucide-react";
 import StarRating from "@/components/StarRating";
 import ReviewForm from "@/components/ReviewForm";
 import ReviewList from "@/components/ReviewList";
+import BeerEditForm from "@/components/BeerEditForm";
 
 interface BeerCardProps {
   beer: {
@@ -28,6 +29,7 @@ interface BeerCardProps {
 export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -40,6 +42,16 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
     });
     router.refresh();
   };
+
+  if (editing) {
+    return (
+      <Card>
+        <CardContent className="pt-4">
+          <BeerEditForm beer={beer} onCancel={() => setEditing(false)} />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -92,6 +104,13 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
                 <ChevronDown className="h-4 w-4" />
               )}
               Reviews
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditing(true)}
+            >
+              <Pencil className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
