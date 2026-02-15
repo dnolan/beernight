@@ -60,6 +60,7 @@ export default async function EventDetailPage({
       eventId: event._id.toString(),
       name: beer.name,
       brewery: beer.brewery,
+      breweries: beer.breweries ?? [],
       style: beer.style,
       abv: beer.abv,
       avgRating: Math.round(avgRating * 10) / 10,
