@@ -43,8 +43,10 @@ export default function ReviewList({
   const [editRating, setEditRating] = useState(0);
   const [editDescription, setEditDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`/api/events/${eventId}/beers/${beerId}/reviews`)
       .then((res) => res.json())
       .then((data) => {
@@ -52,7 +54,12 @@ export default function ReviewList({
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [eventId, beerId]);
+  }, [eventId, beerId, refreshKey]);
+
+  const handleReviewAdded = () => {
+    setRefreshKey((k) => k + 1);
+    router.refresh();
+  };
 
   const startEditing = (review: Review) => {
     setEditingId(review._id);
@@ -111,7 +118,7 @@ export default function ReviewList({
   return (
     <Stack spacing={1.5}>
       {!hasUserReview && (
-        <ReviewForm eventId={eventId} beerId={beerId} />
+        <ReviewForm eventId={eventId} beerId={beerId} onReviewAdded={handleReviewAdded} />
       )}
       {reviews.length === 0 ? (
         <Typography variant="body2" color="text.secondary">

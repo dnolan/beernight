@@ -11,9 +11,10 @@ import StarRating from "@/components/StarRating";
 interface ReviewFormProps {
   eventId: string;
   beerId: string;
+  onReviewAdded?: () => void;
 }
 
-export default function ReviewForm({ eventId, beerId }: ReviewFormProps) {
+export default function ReviewForm({ eventId, beerId, onReviewAdded }: ReviewFormProps) {
   const router = useRouter();
   const [rating, setRating] = useState(0);
   const [description, setDescription] = useState("");
@@ -37,6 +38,7 @@ export default function ReviewForm({ eventId, beerId }: ReviewFormProps) {
       if (res.ok) {
         setRating(0);
         setDescription("");
+        onReviewAdded?.();
         router.refresh();
       }
     } finally {
