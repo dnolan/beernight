@@ -13,7 +13,6 @@ import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
 import { Delete, ExpandMore, ExpandLess, Edit } from "@mui/icons-material";
 import StarRating from "@/components/StarRating";
-import ReviewForm from "@/components/ReviewForm";
 import ReviewList from "@/components/ReviewList";
 import BeerEditForm from "@/components/BeerEditForm";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -123,7 +122,6 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
         <Collapse in={expanded}>
           <Divider sx={{ my: 2 }} />
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <ReviewForm eventId={beer.eventId} beerId={beer._id} />
             <ReviewList
               eventId={beer.eventId}
               beerId={beer._id}
