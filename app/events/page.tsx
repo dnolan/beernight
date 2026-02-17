@@ -2,7 +2,7 @@ import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
 import { Add } from "@mui/icons-material";
 import { requireAuth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
@@ -68,13 +68,31 @@ export default async function EventsPage() {
           </Typography>
         </Box>
       ) : (
-        <Grid container spacing={2}>
-          {eventsWithStats.map((event) => (
-            <Grid key={event._id} size={{ xs: 12 }}>
-              <EventCard event={event} />
-            </Grid>
-          ))}
-        </Grid>
+        <Stack spacing={2}>
+          {(() => {
+            let lastGroup = "";
+            return eventsWithStats.map((event) => {
+              const d = new Date(event.date);
+              const group = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+              const showHeader = group !== lastGroup;
+              lastGroup = group;
+              return (
+                <Box key={event._id}>
+                  {showHeader && (
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      sx={{ display: "block", mb: 1, mt: 1 }}
+                    >
+                      {group}
+                    </Typography>
+                  )}
+                  <EventCard event={event} />
+                </Box>
+              );
+            });
+          })()}
+        </Stack>
       )}
     </Box>
   );

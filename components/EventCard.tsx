@@ -48,33 +48,35 @@ export default function EventCard({ event }: EventCardProps) {
                   <Typography variant="subtitle1" fontWeight={600}>
                     {title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-                    · {dateFormatted}
-                  </Typography>
                   {isFuture && (
                     <Upcoming sx={{ fontSize: 18, color: "warning.main" }} />
                   )}
                 </Box>
               </Box>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1, flexShrink: 0 }}>
-                <Chip
-                  icon={<SportsBar sx={{ fontSize: 16 }} />}
-                  label={`${event.beerCount} beer${event.beerCount !== 1 ? "s" : ""}`}
-                  size="small"
-                  variant="outlined"
-                />
-                {event.beerCount > 0 && (
-                  <Chip label={`Avg ${event.avgAbv}% ABV`} size="small" variant="outlined" />
-                )}
-                {event.reviewCount > 0 && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexShrink: 0 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+                  {dateFormatted}
+                </Typography>
+                <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
                   <Chip
-                    icon={<Star sx={{ fontSize: 16, color: "#facc15" }} />}
-                    label={String(event.avgRating)}
+                    icon={<SportsBar sx={{ fontSize: 16 }} />}
+                    label={`${event.beerCount} beer${event.beerCount !== 1 ? "s" : ""}`}
                     size="small"
                     variant="outlined"
                   />
-                )}
-              </Stack>
+                  {event.beerCount > 0 && (
+                    <Chip label={`Avg ${event.avgAbv}% ABV`} size="small" variant="outlined" />
+                  )}
+                  {event.reviewCount > 0 && (
+                    <Chip
+                      icon={<Star sx={{ fontSize: 16, color: "#facc15" }} />}
+                      label={String(event.avgRating)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  )}
+                </Stack>
+              </Box>
             </Box>
           </CardContent>
         </CardActionArea>
