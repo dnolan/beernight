@@ -36,6 +36,17 @@ export default function RootLayout({
             <main style={{ maxWidth: 960, margin: "0 auto", padding: "32px 16px" }}>
               {children}
             </main>
+            <footer
+              style={{
+                textAlign: "center",
+                padding: "24px 16px",
+                fontSize: 12,
+                opacity: 0.45,
+              }}
+            >
+              v{process.env.NEXT_PUBLIC_BUILD_VERSION} &middot; Built{" "}
+              {new Date(process.env.NEXT_PUBLIC_BUILD_DATE!).toLocaleDateString()}
+            </footer>
           </Providers>
         </AppRouterCacheProvider>
       </body>
