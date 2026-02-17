@@ -89,7 +89,7 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
             </Typography>
             {beer.reviewCount > 0 && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
-                <StarRating rating={Math.round(beer.avgRating)} size="sm" />
+                <StarRating rating={beer.avgRating} size="sm" />
                 <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating), fontWeight: 600 }}>
                   {beer.avgRating}
                 </Typography>

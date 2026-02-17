@@ -37,9 +37,9 @@ export async function POST(
   const body = await request.json();
   const { rating, description } = body;
 
-  if (!rating || rating < 1 || rating > 5) {
+  if (!rating || rating < 0.5 || rating > 5 || rating % 0.5 !== 0) {
     return NextResponse.json(
-      { error: "Rating must be between 1 and 5" },
+      { error: "Rating must be between 0.5 and 5 in half-star increments" },
       { status: 400 }
     );
   }

@@ -32,11 +32,13 @@ export default function StarRating({
     <Rating
       value={rating}
       max={maxRating}
+      precision={0.5}
       readOnly={!interactive}
       size={sizeMap[size]}
       sx={color ? {
         "& .MuiRating-iconFilled": { color },
         "& .MuiRating-iconHover": { color },
+        "& .MuiRating-decimal .MuiRating-iconFilled": { color },
       } : undefined}
       onChange={(_e, newValue) => {
         if (interactive && onChange && newValue !== null) {

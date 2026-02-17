@@ -38,7 +38,7 @@ const ReviewSchema = new Schema<IReview>(
     rating: {
       type: Number,
       required: true,
-      min: 1,
+      min: 0.5,
       max: 5,
     },
     description: {
