@@ -70,7 +70,7 @@ export default async function EventsPage() {
       ) : (
         <Grid container spacing={2}>
           {eventsWithStats.map((event) => (
-            <Grid key={event._id} size={{ xs: 12, sm: 6 }}>
+            <Grid key={event._id} size={{ xs: 12 }}>
               <EventCard event={event} />
             </Grid>
           ))}
