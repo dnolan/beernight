@@ -7,6 +7,7 @@ import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { SportsBar, Star, Upcoming } from "@mui/icons-material";
+import { getRatingColor } from "@/lib/utils";
 
 interface EventCardProps {
   event: {
@@ -69,10 +70,15 @@ export default function EventCard({ event }: EventCardProps) {
                   )}
                   {event.reviewCount > 0 && (
                     <Chip
-                      icon={<Star sx={{ fontSize: 16, color: "#facc15" }} />}
+                      icon={<Star sx={{ fontSize: 16 }} />}
                       label={String(event.avgRating)}
                       size="small"
                       variant="outlined"
+                      sx={{
+                        borderColor: getRatingColor(event.avgRating),
+                        color: getRatingColor(event.avgRating),
+                        "& .MuiChip-icon": { color: getRatingColor(event.avgRating) },
+                      }}
                     />
                   )}
                 </Stack>

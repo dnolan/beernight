@@ -12,6 +12,7 @@ import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import { SportsBar } from "@mui/icons-material";
+import { getRatingColor } from "@/lib/utils";
 
 interface BeerEntry {
   _id: string;
@@ -139,8 +140,9 @@ export default function BreweriesPage() {
                       </Box>
                       {beer.reviewCount > 0 && (
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
-                          <Rating value={beer.avgRating} readOnly size="small" precision={0.1} />
-                          <Typography variant="body2" color="text.secondary">
+                          <Rating value={beer.avgRating} readOnly size="small" precision={0.1}
+                            sx={{ "& .MuiRating-iconFilled": { color: getRatingColor(beer.avgRating) } }} />
+                          <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating) }}>
                             {beer.avgRating}
                           </Typography>
                         </Box>

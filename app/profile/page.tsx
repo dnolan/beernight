@@ -13,6 +13,7 @@ import Stack from "@mui/material/Stack";
 import Rating from "@mui/material/Rating";
 import Skeleton from "@mui/material/Skeleton";
 import { SportsBar } from "@mui/icons-material";
+import { getRatingColor } from "@/lib/utils";
 
 interface ReviewWithBeer {
   _id: string;
@@ -95,6 +96,7 @@ export default function ProfilePage() {
           <Chip
             label={`Avg rating: ${avgRating} / 5`}
             variant="outlined"
+            sx={{ borderColor: getRatingColor(avgRating), color: getRatingColor(avgRating) }}
           />
         )}
       </Stack>

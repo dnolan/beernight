@@ -1,6 +1,9 @@
 "use client";
 
 import Rating from "@mui/material/Rating";
+import { getRatingColor } from "@/lib/utils";
+
+export { getRatingColor };
 
 interface StarRatingProps {
   rating: number;
@@ -23,12 +26,18 @@ export default function StarRating({
   size = "md",
   onChange,
 }: StarRatingProps) {
+  const color = rating > 0 ? getRatingColor(rating) : undefined;
+
   return (
     <Rating
       value={rating}
       max={maxRating}
       readOnly={!interactive}
       size={sizeMap[size]}
+      sx={color ? {
+        "& .MuiRating-iconFilled": { color },
+        "& .MuiRating-iconHover": { color },
+      } : undefined}
       onChange={(_e, newValue) => {
         if (interactive && onChange && newValue !== null) {
           onChange(newValue);

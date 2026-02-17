@@ -13,6 +13,7 @@ import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
 import { Delete, ExpandMore, ExpandLess, Edit } from "@mui/icons-material";
 import StarRating from "@/components/StarRating";
+import { getRatingColor } from "@/lib/utils";
 import ReviewList from "@/components/ReviewList";
 import BeerEditForm from "@/components/BeerEditForm";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -89,9 +90,11 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
             {beer.reviewCount > 0 && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
                 <StarRating rating={Math.round(beer.avgRating)} size="sm" />
-                <Typography variant="body2" color="text.secondary">
-                  {beer.avgRating} ({beer.reviewCount} review
-                  {beer.reviewCount !== 1 ? "s" : ""})
+                <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating), fontWeight: 600 }}>
+                  {beer.avgRating}
+                </Typography>
+                <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating), opacity: 0.55 }}>
+                  ({beer.reviewCount} review{beer.reviewCount !== 1 ? "s" : ""})
                 </Typography>
               </Box>
             )}
