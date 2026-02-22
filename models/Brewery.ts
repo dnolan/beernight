@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IBrewery extends Document {
   name: string;
+  imageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,6 +14,10 @@ const BrewerySchema = new Schema<IBrewery>(
       required: true,
       trim: true,
       unique: true,
+    },
+    imageUrl: {
+      type: String,
+      default: "",
     },
   },
   {

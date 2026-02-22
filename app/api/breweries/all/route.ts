@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import Beer from "@/models/Beer";
+import Brewery from "@/models/Brewery";
 import Review from "@/models/Review";
 import Event from "@/models/Event";
 
@@ -17,12 +18,17 @@ export async function GET() {
   const beers = await Beer.find({}).lean();
   const beerIds = beers.map((b) => b._id);
 
-  const [reviews, events] = await Promise.all([
+  const [reviews, events, breweryDocs] = await Promise.all([
     Review.find({ beerId: { $in: beerIds } }).lean(),
     Event.find({
       _id: { $in: [...new Set(beers.map((b) => b.eventId.toString()))] },
     }).lean(),
+    Brewery.find({}).lean(),
   ]);
+
+  const breweryImageMap = new Map(
+    breweryDocs.map((b) => [b.name.toLowerCase(), b.imageUrl || ""])
+  );
 
   const eventMap = new Map(events.map((e) => [e._id.toString(), e]));
 
@@ -125,6 +131,7 @@ export async function GET() {
       beersList.sort((a, b) => b.avgRating - a.avgRating);
       return {
         name: displayName,
+        imageUrl: breweryImageMap.get(key) || "",
         beerCount: beersList.length,
         beers: beersList,
       };

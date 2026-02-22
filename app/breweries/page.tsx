@@ -13,6 +13,7 @@ import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import { SportsBar } from "@mui/icons-material";
 import { getRatingColor } from "@/lib/utils";
+import BreweryImageUpload from "@/components/BreweryImageUpload";
 
 interface BeerEntry {
   _id: string;
@@ -27,6 +28,7 @@ interface BeerEntry {
 
 interface BreweryGroup {
   name: string;
+  imageUrl: string;
   beerCount: number;
   beers: BeerEntry[];
 }
@@ -83,15 +85,28 @@ export default function BreweriesPage() {
           {breweries.map((brewery) => (
             <Card key={brewery.name}>
               <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-                  <Typography variant="h6" fontWeight={600}>
-                    {brewery.name}
-                  </Typography>
-                  <Chip
-                    label={`${brewery.beerCount} beer${brewery.beerCount !== 1 ? "s" : ""}`}
-                    size="small"
-                    variant="outlined"
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+                  <BreweryImageUpload
+                    breweryName={brewery.name}
+                    imageUrl={brewery.imageUrl}
+                    onImageChange={(newUrl) => {
+                      setBreweries((prev) =>
+                        prev.map((b) =>
+                          b.name === brewery.name ? { ...b, imageUrl: newUrl } : b
+                        )
+                      );
+                    }}
                   />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" fontWeight={600}>
+                      {brewery.name}
+                    </Typography>
+                    <Chip
+                      label={`${brewery.beerCount} beer${brewery.beerCount !== 1 ? "s" : ""}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Box>
                 </Box>
                 <Stack spacing={1}>
                   {brewery.beers.map((beer) => (
