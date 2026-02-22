@@ -5,13 +5,13 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
-import { SportsBar } from "@mui/icons-material";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import { SportsBar, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { getRatingColor } from "@/lib/utils";
 import BreweryImageUpload from "@/components/BreweryImageUpload";
 
@@ -37,6 +37,16 @@ export default function BreweriesPage() {
   const { data: session } = useSession();
   const [breweries, setBreweries] = useState<BreweryGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (name: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
 
   useEffect(() => {
     fetch("/api/breweries/all")
@@ -71,9 +81,9 @@ export default function BreweriesPage() {
       </Box>
 
       {loading ? (
-        <Stack spacing={2}>
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} variant="rounded" height={120} />
+        <Stack spacing={1}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} variant="rounded" height={56} />
           ))}
         </Stack>
       ) : breweries.length === 0 ? (
@@ -81,11 +91,44 @@ export default function BreweriesPage() {
           No breweries yet. Add beers to events to see them here!
         </Typography>
       ) : (
-        <Stack spacing={2}>
-          {breweries.map((brewery) => (
-            <Card key={brewery.name}>
-              <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+        <Stack spacing={1}>
+          {breweries.map((brewery) => {
+            const isExpanded = expanded.has(brewery.name);
+            const avgAll =
+              brewery.beers.filter((b) => b.reviewCount > 0).length > 0
+                ? Math.round(
+                    (brewery.beers
+                      .filter((b) => b.reviewCount > 0)
+                      .reduce((s, b) => s + b.avgRating, 0) /
+                      brewery.beers.filter((b) => b.reviewCount > 0).length) *
+                      10
+                  ) / 10
+                : 0;
+
+            return (
+              <Box
+                key={brewery.name}
+                sx={{
+                  border: 1,
+                  borderColor: "divider",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {/* Collapsed header row */}
+                <Box
+                  onClick={() => toggleExpand(brewery.name)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    px: 2,
+                    py: 1,
+                    cursor: "pointer",
+                    "&:hover": { bgcolor: "action.hover" },
+                    transition: "background-color 0.15s",
+                  }}
+                >
                   <BreweryImageUpload
                     breweryName={brewery.name}
                     imageUrl={brewery.imageUrl}
@@ -97,77 +140,100 @@ export default function BreweriesPage() {
                       );
                     }}
                   />
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" fontWeight={600}>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="subtitle1" fontWeight={600} noWrap>
                       {brewery.name}
                     </Typography>
-                    <Chip
-                      label={`${brewery.beerCount} beer${brewery.beerCount !== 1 ? "s" : ""}`}
-                      size="small"
-                      variant="outlined"
-                    />
                   </Box>
-                </Box>
-                <Stack spacing={1}>
-                  {brewery.beers.map((beer) => (
-                    <Box
-                      key={beer._id}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 2,
-                        border: 1,
-                        borderColor: "divider",
-                        borderRadius: 1,
-                        px: 2,
-                        py: 1,
-                      }}
+                  <Chip
+                    label={`${brewery.beerCount} beer${brewery.beerCount !== 1 ? "s" : ""}`}
+                    size="small"
+                    variant="outlined"
+                    sx={{ flexShrink: 0 }}
+                  />
+                  {avgAll > 0 && (
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      sx={{ color: getRatingColor(avgAll), flexShrink: 0 }}
                     >
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-                          <Typography variant="body1" fontWeight={500}>
-                            {beer.name}
-                          </Typography>
-                          {beer.abv > 0 && (
-                            <Chip
-                              label={`${beer.abv}%`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontFamily: "monospace", fontSize: 12 }}
-                            />
-                          )}
-                          {beer.style && (
-                            <Typography variant="body2" color="text.secondary">
-                              {beer.style}
+                      {avgAll}
+                    </Typography>
+                  )}
+                  <IconButton
+                    size="small"
+                    sx={{
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.2s",
+                    }}
+                  >
+                    <ExpandMoreIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+
+                {/* Expandable beer list */}
+                <Collapse in={isExpanded}>
+                  <Stack spacing={1} sx={{ px: 2, pb: 2, pt: 0.5 }}>
+                    {brewery.beers.map((beer) => (
+                      <Box
+                        key={beer._id}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 2,
+                          border: 1,
+                          borderColor: "divider",
+                          borderRadius: 1,
+                          px: 2,
+                          py: 1,
+                        }}
+                      >
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="body1" fontWeight={500}>
+                              {beer.name}
                             </Typography>
-                          )}
+                            {beer.abv > 0 && (
+                              <Chip
+                                label={`${beer.abv}%`}
+                                size="small"
+                                variant="outlined"
+                                sx={{ fontFamily: "monospace", fontSize: 12 }}
+                              />
+                            )}
+                            {beer.style && (
+                              <Typography variant="body2" color="text.secondary">
+                                {beer.style}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Link href={`/events/${beer.eventId}`}>
+                            <Typography
+                              variant="caption"
+                              color="primary"
+                              sx={{ "&:hover": { textDecoration: "underline" } }}
+                            >
+                              {beer.eventTitle}
+                            </Typography>
+                          </Link>
                         </Box>
-                        <Link href={`/events/${beer.eventId}`}>
-                          <Typography
-                            variant="caption"
-                            color="primary"
-                            sx={{ "&:hover": { textDecoration: "underline" } }}
-                          >
-                            {beer.eventTitle}
-                          </Typography>
-                        </Link>
+                        {beer.reviewCount > 0 && (
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
+                            <Rating value={beer.avgRating} readOnly size="small" precision={0.1}
+                              sx={{ "& .MuiRating-iconFilled": { color: getRatingColor(beer.avgRating) } }} />
+                            <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating) }}>
+                              {beer.avgRating}
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
-                      {beer.reviewCount > 0 && (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
-                          <Rating value={beer.avgRating} readOnly size="small" precision={0.1}
-                            sx={{ "& .MuiRating-iconFilled": { color: getRatingColor(beer.avgRating) } }} />
-                          <Typography variant="body2" sx={{ color: getRatingColor(beer.avgRating) }}>
-                            {beer.avgRating}
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
-                  ))}
-                </Stack>
-              </CardContent>
-            </Card>
-          ))}
+                    ))}
+                  </Stack>
+                </Collapse>
+              </Box>
+            );
+          })}
         </Stack>
       )}
     </Box>
