@@ -63,7 +63,7 @@ export async function GET() {
     const event = eventMap.get(beer.eventId.toString());
     const eventTitle = event
       ? event.title ||
-        event.date.toLocaleDateString("en-US", {
+        event.date.toLocaleDateString("en-GB", {
           month: "long",
           year: "numeric",
         })

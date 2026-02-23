@@ -45,7 +45,7 @@ export default function RootLayout({
               }}
             >
               v{process.env.NEXT_PUBLIC_BUILD_VERSION} &middot; Built{" "}
-              {new Date(process.env.NEXT_PUBLIC_BUILD_DATE!).toLocaleDateString()}
+              {new Date(process.env.NEXT_PUBLIC_BUILD_DATE!).toLocaleDateString("en-GB")}
             </footer>
           </Providers>
         </AppRouterCacheProvider>
