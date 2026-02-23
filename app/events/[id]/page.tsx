@@ -4,7 +4,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { CalendarMonth, Edit } from "@mui/icons-material";
+import { CalendarMonth, Edit, Upcoming } from "@mui/icons-material";
+import Chip from "@mui/material/Chip";
 import { requireAuth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Event from "@/models/Event";
@@ -84,6 +85,10 @@ export default async function EventDetailPage({
       : 0;
 
   const title = getEventDisplayTitle(event);
+  const eventDay = new Date(event.date).setHours(0, 0, 0, 0);
+  const today = new Date().setHours(0, 0, 0, 0);
+  const isFuture = eventDay >= today;
+  const daysUntil = isFuture ? Math.round((eventDay - today) / (1000 * 60 * 60 * 24)) : 0;
   const dateFormatted = event.date.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -102,6 +107,16 @@ export default async function EventDetailPage({
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mt: 0.5, color: "text.secondary" }}>
               <CalendarMonth sx={{ fontSize: 18 }} />
               <Typography variant="body2">{dateFormatted}</Typography>
+              {isFuture && (
+                <Chip
+                  icon={<Upcoming sx={{ fontSize: 16 }} />}
+                  label={daysUntil === 0 ? "Today!" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days away`}
+                  size="small"
+                  color="warning"
+                  variant="outlined"
+                  sx={{ ml: 0.5 }}
+                />
+              )}
             </Box>
             {event.chooser && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>

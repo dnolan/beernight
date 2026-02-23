@@ -30,7 +30,11 @@ function getEventDisplayTitle(event: { title?: string; date: string }) {
 export default function EventCard({ event }: EventCardProps) {
   const title = getEventDisplayTitle(event);
   const eventDate = new Date(event.date);
-  const isFuture = eventDate.setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0);
+  const now = new Date();
+  const eventDay = new Date(eventDate).setHours(0, 0, 0, 0);
+  const today = new Date(now).setHours(0, 0, 0, 0);
+  const isFuture = eventDay >= today;
+  const daysUntil = isFuture ? Math.round((eventDay - today) / (1000 * 60 * 60 * 24)) : 0;
   const dateFormatted = eventDate.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
@@ -50,7 +54,13 @@ export default function EventCard({ event }: EventCardProps) {
                     {title}
                   </Typography>
                   {isFuture && (
-                    <Upcoming sx={{ fontSize: 18, color: "warning.main" }} />
+                    <Chip
+                      icon={<Upcoming sx={{ fontSize: 16 }} />}
+                      label={daysUntil === 0 ? "Today!" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days`}
+                      size="small"
+                      color="warning"
+                      variant="outlined"
+                    />
                   )}
                 </Box>
               </Box>
