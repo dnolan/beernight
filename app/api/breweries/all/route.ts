@@ -4,9 +4,8 @@ import dbConnect from "@/lib/db";
 import Beer from "@/models/Beer";
 import Brewery from "@/models/Brewery";
 import Review from "@/models/Review";
-import Event from "@/models/Event";
 
-// GET /api/breweries/all – list all breweries with their beers
+// GET /api/breweries/all – list all breweries with beer counts & avg rating
 export async function GET() {
   const session = await auth();
   if (!session?.user?.email) {
@@ -15,72 +14,31 @@ export async function GET() {
 
   await dbConnect();
 
-  const beers = await Beer.find({}).lean();
-  const beerIds = beers.map((b) => b._id);
-
-  const [reviews, events, breweryDocs] = await Promise.all([
-    Review.find({ beerId: { $in: beerIds } }).lean(),
-    Event.find({
-      _id: { $in: [...new Set(beers.map((b) => b.eventId.toString()))] },
-    }).lean(),
-    Brewery.find({}).lean(),
+  const [beers, breweryDocs, reviews] = await Promise.all([
+    Beer.find({}, { breweries: 1, brewery: 1 }).lean(),
+    Brewery.find({}, { name: 1, imageUrl: 1 }).lean(),
+    Review.find({}, { beerId: 1, rating: 1 }).lean(),
   ]);
 
   const breweryImageMap = new Map(
     breweryDocs.map((b) => [b.name.toLowerCase(), b.imageUrl || ""])
   );
 
-  const eventMap = new Map(events.map((e) => [e._id.toString(), e]));
+  // Build a map of beerId -> average rating
+  const ratingMap = new Map<string, { sum: number; count: number }>();
+  for (const r of reviews) {
+    const key = r.beerId.toString();
+    const entry = ratingMap.get(key) || { sum: 0, count: 0 };
+    entry.sum += r.rating;
+    entry.count += 1;
+    ratingMap.set(key, entry);
+  }
 
-  // Build a map: brewery name -> beers[]
-  const breweryMap = new Map<
-    string,
-    {
-      _id: string;
-      name: string;
-      style: string;
-      abv: number;
-      avgRating: number;
-      reviewCount: number;
-      eventTitle: string;
-      eventId: string;
-    }[]
-  >();
+  // Accumulate per-brewery: beer count + rating totals
+  const breweryStats = new Map<string, { count: number; ratingSum: number; ratedBeers: number }>();
+  const nameMap = new Map<string, string>();
 
   for (const beer of beers) {
-    const beerReviews = reviews.filter(
-      (r) => r.beerId.toString() === beer._id.toString()
-    );
-    const avgRating =
-      beerReviews.length > 0
-        ? Math.round(
-            (beerReviews.reduce((s, r) => s + r.rating, 0) /
-              beerReviews.length) *
-              10
-          ) / 10
-        : 0;
-
-    const event = eventMap.get(beer.eventId.toString());
-    const eventTitle = event
-      ? event.title ||
-        event.date.toLocaleDateString("en-GB", {
-          month: "long",
-          year: "numeric",
-        })
-      : "";
-
-    const beerData = {
-      _id: beer._id.toString(),
-      name: beer.name,
-      style: beer.style,
-      abv: beer.abv,
-      avgRating,
-      reviewCount: beerReviews.length,
-      eventTitle,
-      eventId: beer.eventId.toString(),
-    };
-
-    // Use the breweries array; fall back to legacy brewery field
     const names =
       beer.breweries && beer.breweries.length > 0
         ? beer.breweries
@@ -88,54 +46,33 @@ export async function GET() {
           ? [beer.brewery]
           : ["Unknown"];
 
+    const beerRating = ratingMap.get(beer._id.toString());
+
     for (const bName of names) {
       const key = bName.toLowerCase();
-      if (!breweryMap.has(key)) {
-        breweryMap.set(key, []);
+      if (!nameMap.has(key)) nameMap.set(key, bName);
+
+      const stats = breweryStats.get(key) || { count: 0, ratingSum: 0, ratedBeers: 0 };
+      stats.count += 1;
+      if (beerRating && beerRating.count > 0) {
+        stats.ratingSum += beerRating.sum / beerRating.count;
+        stats.ratedBeers += 1;
       }
-      breweryMap.get(key)!.push(beerData);
+      breweryStats.set(key, stats);
     }
   }
 
-  // Sort breweries alphabetically, beers by avgRating desc within each
-  const result = [...breweryMap.entries()]
+  const result = [...breweryStats.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([, beersList]) => {
-      beersList.sort((a, b) => b.avgRating - a.avgRating);
-      return {
-        name: beersList[0].name, // placeholder, overridden below
-        beers: beersList,
-      };
-    });
+    .map(([key, stats]) => ({
+      name: nameMap.get(key) || key,
+      imageUrl: breweryImageMap.get(key) || "",
+      beerCount: stats.count,
+      avgRating:
+        stats.ratedBeers > 0
+          ? Math.round((stats.ratingSum / stats.ratedBeers) * 10) / 10
+          : 0,
+    }));
 
-  // Fix brewery name to use proper casing from first beer
-  const finalResult = [...breweryMap.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, beersList]) => {
-      // Find the original cased name from any beer's breweries array
-      let displayName = key;
-      for (const beer of beers) {
-        const match = (beer.breweries ?? []).find(
-          (n) => n.toLowerCase() === key
-        );
-        if (match) {
-          displayName = match;
-          break;
-        }
-        if (beer.brewery && beer.brewery.toLowerCase() === key) {
-          displayName = beer.brewery;
-          break;
-        }
-      }
-
-      beersList.sort((a, b) => b.avgRating - a.avgRating);
-      return {
-        name: displayName,
-        imageUrl: breweryImageMap.get(key) || "",
-        beerCount: beersList.length,
-        beers: beersList,
-      };
-    });
-
-  return NextResponse.json(finalResult);
+  return NextResponse.json(result);
 }
