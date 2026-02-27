@@ -50,6 +50,7 @@ export default function RootLayout({
             </footer>
           </Providers>
         </AppRouterCacheProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
