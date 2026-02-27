@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
