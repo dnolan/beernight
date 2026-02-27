@@ -17,7 +17,7 @@ export async function GET(
   const { id: eventId } = await params;
   await dbConnect();
 
-  const beers = await Beer.find({ eventId }).sort({ createdAt: 1 }).lean();
+  const beers = await Beer.find({ eventId }).sort({ order: 1, createdAt: 1 }).lean();
 
   // Add average rating to each beer
   const beersWithRatings = await Promise.all(
@@ -86,6 +86,10 @@ export async function POST(
     );
   }
 
+  // Determine next order value
+  const lastBeer = await Beer.findOne({ eventId }).sort({ order: -1 }).lean();
+  const nextOrder = lastBeer ? (lastBeer.order ?? 0) + 1 : 0;
+
   const beer = await Beer.create({
     eventId,
     name,
@@ -93,6 +97,7 @@ export async function POST(
     breweries: breweryList,
     style: style || "",
     abv: abv ? parseFloat(abv) : 0,
+    order: nextOrder,
   });
 
   return NextResponse.json(beer, { status: 201 });

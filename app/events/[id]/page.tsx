@@ -12,8 +12,7 @@ import Event from "@/models/Event";
 import Beer from "@/models/Beer";
 import Review from "@/models/Review";
 import EventStats from "@/components/EventStats";
-import BeerCard from "@/components/BeerCard";
-import BeerForm from "@/components/BeerForm";
+import BeerList from "@/components/BeerList";
 import DeleteEventButton from "./DeleteEventButton";
 
 function getEventDisplayTitle(event: { title?: string; date: Date }) {
@@ -37,7 +36,7 @@ export default async function EventDetailPage({
   if (!event) notFound();
 
   const beers = await Beer.find({ eventId: event._id })
-    .sort({ createdAt: 1 })
+    .sort({ order: 1, createdAt: 1 })
     .lean();
 
   const beerIds = beers.map((b) => b._id);
@@ -150,19 +149,11 @@ export default async function EventDetailPage({
         </Box>
       </Box>
 
-      <Stack spacing={1.5}>
-        <Typography variant="h6" fontWeight={600}>
-          Beers
-        </Typography>
-        {beersWithStats.map((beer) => (
-          <BeerCard
-            key={beer._id}
-            beer={beer}
-            currentUserEmail={session.user!.email!}
-          />
-        ))}
-        <BeerForm eventId={event._id.toString()} />
-      </Stack>
+      <BeerList
+        eventId={event._id.toString()}
+        initialBeers={beersWithStats}
+        currentUserEmail={session.user!.email!}
+      />
     </Box>
   );
 }
