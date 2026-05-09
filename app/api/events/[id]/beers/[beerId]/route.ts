@@ -50,7 +50,7 @@ export async function PUT(
   const update: Record<string, unknown> = {};
   if (name) update.name = name;
   if (style !== undefined) update.style = style;
-  if (abv !== undefined) update.abv = parseFloat(abv);
+  if (abv !== undefined && abv !== "") update.abv = parseFloat(abv);
   if (breweryList !== undefined) {
     update.breweries = breweryList;
     update.brewery = breweryList.join(" / ");
