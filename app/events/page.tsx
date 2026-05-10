@@ -73,6 +73,7 @@ export default async function EventsPage({
         reviewCount: reviews.length,
         avgAbv: Math.round(avgAbv * 10) / 10,
         avgRating: Math.round(avgRating * 10) / 10,
+        chooser: event.chooser
       };
     })
   );
