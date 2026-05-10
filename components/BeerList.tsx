@@ -35,6 +35,16 @@ interface BeerData {
   reviewCount: number;
 }
 
+function beerChanged(a: BeerData, b: BeerData): boolean {
+  return (
+    a._id !== b._id ||
+    a.name !== b.name ||
+    a.brewery !== b.brewery ||
+    a.style !== b.style ||
+    a.abv !== b.abv
+  );
+}
+
 interface BeerListProps {
   eventId: string;
   initialBeers: BeerData[];
@@ -49,10 +59,10 @@ export default function BeerList({
   const router = useRouter();
   const [beers, setBeers] = useState<BeerData[]>(initialBeers);
 
-  // Sync with server data when it changes (e.g. after add/delete)
+  // Sync with server data when it changes (e.g. after add/delete/edit)
   if (
     initialBeers.length !== beers.length ||
-    initialBeers.some((b, i) => b._id !== beers[i]?._id)
+    initialBeers.some((b, i) => beerChanged(b, beers[i]))
   ) {
     setBeers(initialBeers);
   }
