@@ -18,6 +18,7 @@ interface EventCardProps {
     reviewCount: number;
     avgAbv: number;
     avgRating: number;
+    chooser?: string;
   };
 }
 
@@ -67,6 +68,7 @@ export default function EventCard({ event }: EventCardProps) {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexShrink: 0 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
                   {dateFormatted}
+                  {event.chooser && ` by ${event.chooser}`}
                 </Typography>
                 <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
                   <Chip
