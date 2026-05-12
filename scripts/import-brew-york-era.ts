@@ -54,6 +54,7 @@ const BeerSchema = new Schema(
     style: String,
     abv: Number,
     order: Number,
+    notes: String,
   },
   { timestamps: true }
 );
@@ -141,6 +142,7 @@ function parseRating(val: unknown): number | null {
 interface BeerRow {
   name: string;
   abv: number | undefined;
+  notes: string;
   ratings: { reviewer: Reviewer; rating: number }[];
 }
 
@@ -238,12 +240,16 @@ async function main() {
       const abvRaw = row[abvCol];
       const abv = (abvRaw != null && abvRaw !== "") ? Number(abvRaw) : undefined;
 
+      const noteL = row[11] != null && String(row[11]).trim() !== "" ? String(row[11]).trim() : "";
+      const noteM = row[12] != null && String(row[12]).trim() !== "" ? String(row[12]).trim() : "";
+      const notes = [noteL, noteM].filter(Boolean).join(" / ");
+
       const ratings = reviewerCols.flatMap(({ col, reviewer }) => {
         const r = parseRating(row[col]);
         return r !== null ? [{ reviewer, rating: r }] : [];
       });
 
-      currentEvent.beers.push({ name, abv, ratings });
+      currentEvent.beers.push({ name, abv, notes, ratings });
     }
   }
 
@@ -307,6 +313,7 @@ async function main() {
         brewery: "Brew York",
         breweries: ["Brew York"],
         abv: beer.abv,
+        notes: beer.notes,
         order: order++,
       });
 
