@@ -22,6 +22,7 @@ export default function BeerForm({ eventId }: BeerFormProps) {
   const [breweries, setBreweries] = useState<string[]>([]);
   const [style, setStyle] = useState("");
   const [abv, setAbv] = useState("");
+  const [notes, setNotes] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +32,7 @@ export default function BeerForm({ eventId }: BeerFormProps) {
       const res = await fetch(`/api/events/${eventId}/beers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, breweries, style, abv }),
+        body: JSON.stringify({ name, breweries, style, abv, notes }),
       });
 
       if (res.ok) {
@@ -39,6 +40,7 @@ export default function BeerForm({ eventId }: BeerFormProps) {
         setBreweries([]);
         setStyle("");
         setAbv("");
+        setNotes("");
         setOpen(false);
         router.refresh();
       }
@@ -104,6 +106,16 @@ export default function BeerForm({ eventId }: BeerFormProps) {
             fullWidth
           />
         </Box>
+        <TextField
+          label="Notes"
+          placeholder="Optional tasting notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          size="small"
+          fullWidth
+          multiline
+          rows={2}
+        />
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={loading || !name}>

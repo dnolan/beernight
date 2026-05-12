@@ -52,7 +52,7 @@ export async function POST(
   await dbConnect();
 
   const body = await request.json();
-  const { name, brewery, breweries, style, abv } = body;
+  const { name, brewery, breweries, style, abv, notes } = body;
 
   if (!name) {
     return NextResponse.json(
@@ -98,6 +98,7 @@ export async function POST(
     style: style || "",
     abv: abv ? parseFloat(abv) : 0,
     order: nextOrder,
+    notes: notes || "",
   });
 
   return NextResponse.json(beer, { status: 201 });

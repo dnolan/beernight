@@ -31,6 +31,7 @@ interface BeerData {
   breweries?: string[];
   style: string;
   abv: number;
+  notes?: string;
   avgRating: number;
   reviewCount: number;
 }
@@ -41,7 +42,8 @@ function beerChanged(a: BeerData, b: BeerData): boolean {
     a.name !== b.name ||
     a.brewery !== b.brewery ||
     a.style !== b.style ||
-    a.abv !== b.abv
+    a.abv !== b.abv ||
+    a.notes !== b.notes
   );
 }
 

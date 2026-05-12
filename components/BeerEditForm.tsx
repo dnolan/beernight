@@ -18,6 +18,7 @@ interface BeerEditFormProps {
     breweries?: string[];
     style: string;
     abv: number;
+    notes?: string;
   };
   onCancel: () => void;
 }
@@ -35,6 +36,7 @@ export default function BeerEditForm({ beer, onCancel }: BeerEditFormProps) {
   );
   const [style, setStyle] = useState(beer.style || "");
   const [abv, setAbv] = useState(beer.abv ? String(beer.abv) : "");
+  const [notes, setNotes] = useState(beer.notes || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ export default function BeerEditForm({ beer, onCancel }: BeerEditFormProps) {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, breweries, style, abv }),
+          body: JSON.stringify({ name, breweries, style, abv, notes }),
         }
       );
 
@@ -99,6 +101,16 @@ export default function BeerEditForm({ beer, onCancel }: BeerEditFormProps) {
             fullWidth
           />
         </Box>
+        <TextField
+          label="Notes"
+          placeholder="Optional tasting notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          size="small"
+          fullWidth
+          multiline
+          rows={2}
+        />
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={loading || !name}>
