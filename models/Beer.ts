@@ -9,6 +9,7 @@ export interface IBeer extends Document {
   style: string;
   abv: number;
   order: number;
+  notes: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +50,11 @@ const BeerSchema = new Schema<IBeer>(
     order: {
       type: Number,
       default: 0,
+    },
+    notes: {
+      type: String,
+      trim: true,
+      default: "",
     },
   },
   {

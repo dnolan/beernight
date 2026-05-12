@@ -63,6 +63,7 @@ export default async function EventDetailPage({
       breweries: beer.breweries ?? [],
       style: beer.style,
       abv: beer.abv,
+      notes: beer.notes ?? "",
       avgRating: Math.round(avgRating * 10) / 10,
       reviewCount: beerReviews.length,
     };

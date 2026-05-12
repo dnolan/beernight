@@ -27,6 +27,7 @@ interface BeerCardProps {
     breweries?: string[];
     style: string;
     abv: number;
+    notes?: string;
     avgRating: number;
     reviewCount: number;
   };
@@ -87,6 +88,11 @@ export default function BeerCard({ beer, currentUserEmail }: BeerCardProps) {
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {[...breweryList, beer.style].filter(Boolean).join(" · ")}
             </Typography>
+            {beer.notes && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontStyle: "italic" }}>
+                {beer.notes}
+              </Typography>
+            )}
             {beer.reviewCount > 0 && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
                 <StarRating rating={beer.avgRating} size="sm" />

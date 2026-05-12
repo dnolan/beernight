@@ -15,6 +15,7 @@ interface SortableBeerCardProps {
     breweries?: string[];
     style: string;
     abv: number;
+    notes?: string;
     avgRating: number;
     reviewCount: number;
   };

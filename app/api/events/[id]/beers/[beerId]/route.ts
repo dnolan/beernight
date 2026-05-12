@@ -18,7 +18,7 @@ export async function PUT(
   await dbConnect();
 
   const body = await request.json();
-  const { name, brewery, breweries, style, abv } = body;
+  const { name, brewery, breweries, style, abv, notes } = body;
 
   // Resolve breweries: prefer new array, fall back to legacy string
   const breweryList: string[] | undefined = Array.isArray(breweries)
@@ -51,6 +51,7 @@ export async function PUT(
   if (name) update.name = name;
   if (style !== undefined) update.style = style;
   if (abv !== undefined && abv !== "") update.abv = parseFloat(abv);
+  if (notes !== undefined) update.notes = notes;
   if (breweryList !== undefined) {
     update.breweries = breweryList;
     update.brewery = breweryList.join(" / ");
